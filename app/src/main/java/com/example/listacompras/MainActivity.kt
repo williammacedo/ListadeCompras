@@ -31,11 +31,13 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+        val produtos = AppDatabase.getInstance(applicationContext).produtoDao().getAll() ?: emptyList()
+
         val adapter = list_view_produtos.adapter as ProdutoAdapter
         adapter.clear()
-        adapter.addAll(produtosGlobal)
+        adapter.addAll(produtos)
 
-        val soma = produtosGlobal.sumByDouble { it.price * it.quantity }
+        val soma = produtos.sumByDouble { it.price * it.quantity }
         val f = NumberFormat.getCurrencyInstance()
         txt_total.text = "TOTAL: ${ f.format(soma) }"
     }

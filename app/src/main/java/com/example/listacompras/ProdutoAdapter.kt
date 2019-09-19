@@ -8,6 +8,10 @@ import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.TextView
 import java.text.NumberFormat
+import android.graphics.BitmapFactory
+import android.graphics.Bitmap
+import java.io.ByteArrayInputStream
+
 
 class ProdutoAdapter (context: Context) : ArrayAdapter<Produto>(context, 0) {
 
@@ -33,9 +37,14 @@ class ProdutoAdapter (context: Context) : ArrayAdapter<Produto>(context, 0) {
         txt_valor.text = f.format(item?.price)
 
         if(item?.photo != null) {
-            img_produto.setImageBitmap(item.photo)
+            img_produto.setImageBitmap(byteArrayToBitmap(item.photo))
         }
 
         return v
+    }
+
+    fun byteArrayToBitmap(byteArray: ByteArray): Bitmap {
+        val arrayInputStream = ByteArrayInputStream(byteArray)
+        return BitmapFactory.decodeStream(arrayInputStream)
     }
 }

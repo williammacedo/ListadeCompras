@@ -8,6 +8,7 @@ import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_cadastro.*
+import java.io.ByteArrayOutputStream
 
 class CadastroActivity : AppCompatActivity() {
 
@@ -24,8 +25,9 @@ class CadastroActivity : AppCompatActivity() {
             val price = txt_valor.text.toString()
 
             if (name.isNotEmpty() && quantity.isNotEmpty() && price.isNotEmpty()) {
-                val produto = Produto(name, quantity.toInt(), price.toDouble(), imageBitMap)
-                produtosGlobal.add(produto)
+                val image: ByteArray? = if(imageBitMap != null) bitMapToByteArray(imageBitMap) else null
+                val produto = Produto(name = name, quantity = quantity.toInt(), price = price.toDouble(), photo = image)
+                AppDatabase.getInstance(this).produtoDao().insertAll(produto)
                 txt_produto.text.clear()
                 txt_qtd.text.clear()
                 txt_valor.text.clear()
@@ -41,6 +43,12 @@ class CadastroActivity : AppCompatActivity() {
         img_foto_produto.setOnClickListener {
             abrirGaleria()
         }
+    }
+
+    private fun bitMapToByteArray(image: Bitmap?): ByteArray {
+        val stream = ByteArrayOutputStream()
+        image?.compress(Bitmap.CompressFormat.PNG, 90, stream)
+        return stream.toByteArray()
     }
 
     fun abrirGaleria() {
