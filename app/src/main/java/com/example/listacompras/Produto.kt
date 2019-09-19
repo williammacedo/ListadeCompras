@@ -1,7 +1,6 @@
 package com.example.listacompras
 
-import android.graphics.Bitmap
-import androidx.room.ColumnInfo
+import androidx.annotation.Nullable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import java.util.*
@@ -12,6 +11,6 @@ data class Produto(
     val name: String,
     val quantity: Int,
     val price: Double,
-    @ColumnInfo(typeAffinity = ColumnInfo.BLOB)
+    @Nullable
     val photo: ByteArray?
 )

@@ -9,6 +9,13 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_cadastro.*
 import java.io.ByteArrayOutputStream
+import android.widget.Toast
+import android.os.AsyncTask
+import androidx.core.content.ContextCompat.startActivity
+
+
+
+
 
 class CadastroActivity : AppCompatActivity() {
 
@@ -20,29 +27,50 @@ class CadastroActivity : AppCompatActivity() {
         setContentView(R.layout.activity_cadastro)
 
         btn_inserir.setOnClickListener {
-            val name = txt_produto.text.toString()
-            val quantity = txt_qtd.text.toString()
-            val price = txt_valor.text.toString()
-
-            if (name.isNotEmpty() && quantity.isNotEmpty() && price.isNotEmpty()) {
-                val image: ByteArray? = if(imageBitMap != null) bitMapToByteArray(imageBitMap) else null
-                val produto = Produto(name = name, quantity = quantity.toInt(), price = price.toDouble(), photo = image)
-                AppDatabase.getInstance(this).produtoDao().insertAll(produto)
-                txt_produto.text.clear()
-                txt_qtd.text.clear()
-                txt_valor.text.clear()
-                imageBitMap = null
-            }else{
-                txt_produto.error = if (txt_produto.text.isEmpty()) "Preenchao nome do produto" else null
-                txt_qtd.error = if (txt_qtd.text.isEmpty()) "Preencha a quantidade" else null
-                txt_valor.error = if (txt_valor.text.isEmpty()) "Preencha o valor" else null
-            }
-
+            saveProduto()
         }
 
         img_foto_produto.setOnClickListener {
             abrirGaleria()
         }
+    }
+
+    private fun saveProduto() {
+        val name = txt_produto.text.toString()
+        val quantity = txt_qtd.text.toString()
+        val price = txt_valor.text.toString()
+        val image: ByteArray? = if(imageBitMap != null) bitMapToByteArray(imageBitMap) else null
+
+        if (name.isEmpty() || quantity.isEmpty() || price.isEmpty()) {
+            txt_produto.error = if (txt_produto.text.isEmpty()) "Preencha o nome do produto" else null
+            txt_qtd.error = if (txt_qtd.text.isEmpty()) "Preencha a quantidade" else null
+            txt_valor.error = if (txt_valor.text.isEmpty()) "Preencha o valor" else null
+            return
+        }
+
+        class SaveTask : AsyncTask<Void, Void, Void>() {
+
+            override fun doInBackground(vararg voids: Void): Void? {
+                //creating a task
+                val produto = Produto(name = name, quantity = quantity.toInt(), price = price.toDouble(), photo = image)
+
+                //adding to database
+                AppDatabase.getInstance(applicationContext)
+                    .produtoDao()
+                    .insertAll(produto)
+                return null
+            }
+        }
+
+        val st = SaveTask()
+        st.execute()
+
+        finish()
+        txt_produto.text.clear()
+        txt_qtd.text.clear()
+        txt_valor.text.clear()
+        imageBitMap = null
+        Toast.makeText(applicationContext, "Produto cadastrado com sucesso.", Toast.LENGTH_LONG).show()
     }
 
     private fun bitMapToByteArray(image: Bitmap?): ByteArray {
