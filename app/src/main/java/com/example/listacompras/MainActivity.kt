@@ -2,9 +2,7 @@ package com.example.listacompras
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
-import kotlinx.android.synthetic.main.activity_cadastro.*
 import kotlinx.android.synthetic.main.activity_main.*
 import java.text.NumberFormat
 
