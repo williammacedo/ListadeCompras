@@ -1,9 +1,12 @@
 package com.example.listacompras
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
+import kotlinx.android.synthetic.main.activity_cadastro.*
 import kotlinx.android.synthetic.main.activity_main.*
+import java.text.NumberFormat
 
 
 class MainActivity : AppCompatActivity() {
@@ -12,20 +15,13 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        var produtos = mutableListOf("TV", "Notebook", "Celular", "Monitor")
-        val produtosAdapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, produtos)
-
+        val produtosAdapter = ProdutoAdapter(this)
         list_view_produtos.adapter = produtosAdapter
 
-        btn_inserir.setOnClickListener {
-            val produto = txt_produto.text.toString()
+        btn_adicionar.setOnClickListener {
+            val cadastroIntent = Intent(this, CadastroActivity::class.java)
 
-            if(produto.isNotEmpty()) {
-                produtosAdapter.add(produto)
-                txt_produto.text.clear()
-            } else {
-                txt_produto.error = "Preencha um valor."
-            }
+            startActivity(cadastroIntent)
         }
 
         list_view_produtos.setOnItemLongClickListener { parent, view, position, id ->
@@ -34,4 +30,16 @@ class MainActivity : AppCompatActivity() {
             true
         }
     }
+
+    override fun onResume() {
+        super.onResume()
+        val adapter = list_view_produtos.adapter as ProdutoAdapter
+        adapter.clear()
+        adapter.addAll(produtosGlobal)
+
+        val soma = produtosGlobal.sumByDouble { it.price * it.quantity }
+        val f = NumberFormat.getCurrencyInstance()
+        txt_total.text = "TOTAL: ${ f.format(soma) }"
+    }
+
 }
